@@ -1,6 +1,9 @@
 import { Link } from "react-router";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { supabase } from "@/lib/supabase";
 import {
   Database,
   BrainCircuit,
@@ -11,11 +14,15 @@ import {
   LogOut,
   Mail,
   Github,
-  Linkedin,
+  Instagram,
   Menu,
   X,
   Check,
   Sparkles,
+  Send,
+  Loader2,
+  CheckCircle2,
+  UserRound,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -147,6 +154,15 @@ function Navbar() {
         <div className="hidden md:flex items-center gap-3">
           {isAuthenticated ? (
             <>
+              <Link to="/area-riservata">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-cyan-300/40 text-cyan-200 hover:bg-cyan-400/10 bg-transparent"
+                >
+                  <UserRound className="w-4 h-4 mr-1" /> Area riservata
+                </Button>
+              </Link>
               <span className="text-sm text-white/70">
                 Ciao, <span className="text-white font-medium">{user?.name ?? "utente"}</span>
               </span>
@@ -193,9 +209,16 @@ function Navbar() {
             </a>
           ))}
           {isAuthenticated ? (
-            <Button variant="outline" size="sm" onClick={logout} className="border-white/20 text-white bg-transparent w-fit">
-              <LogOut className="w-4 h-4 mr-1" /> Esci
-            </Button>
+            <>
+              <Link to="/area-riservata" onClick={() => setOpen(false)}>
+                <Button variant="outline" size="sm" className="border-cyan-300/40 text-cyan-200 hover:bg-cyan-400/10 bg-transparent w-fit">
+                  <UserRound className="w-4 h-4 mr-1" /> Area riservata
+                </Button>
+              </Link>
+              <Button variant="outline" size="sm" onClick={logout} className="border-white/20 text-white bg-transparent w-fit">
+                <LogOut className="w-4 h-4 mr-1" /> Esci
+              </Button>
+            </>
           ) : (
             <Link to="/login">
               <Button size="sm" className="bg-gradient-to-r from-violet-600 to-cyan-500 text-white border-0 w-fit">
@@ -365,6 +388,33 @@ const plans = [
 ];
 
 function Pricing() {
+  const [dbPlans, setDbPlans] = useState<typeof plans | null>(null);
+
+  useEffect(() => {
+    supabase
+      .from("pricing_plans")
+      .select("name, description, price_from, unit, features, highlight")
+      .eq("published", true)
+      .order("sort_order")
+      .then(({ data, error }) => {
+        if (!error && data && data.length > 0) {
+          setDbPlans(
+            data.map((p) => ({
+              name: p.name as string,
+              price: `€${Number(p.price_from).toLocaleString("it-IT")}`,
+              unit: (p.unit as string) ?? "una tantum",
+              desc: (p.description as string) ?? "",
+              features: (p.features as string[]) ?? [],
+              highlight: p.highlight as boolean,
+              cta: "Richiedi preventivo",
+            }))
+          );
+        }
+      });
+  }, []);
+
+  const allPlans = dbPlans ?? plans;
+
   return (
     <section id="prezzi" className="py-24 bg-[#08081a] relative overflow-hidden">
       <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[130px] pointer-events-none" />
@@ -379,7 +429,7 @@ function Pricing() {
           Ogni progetto è unico: questi sono i prezzi di partenza. Contattami per un preventivo su misura, sempre gratuito.
         </p>
         <div className="grid md:grid-cols-3 gap-8 mt-14 items-stretch">
-          {plans.map((pl) => (
+          {allPlans.map((pl) => (
             <div
               key={pl.name}
               className={`relative rounded-3xl p-8 flex flex-col border transition-all duration-300 hover:-translate-y-1 ${
@@ -430,37 +480,214 @@ function Pricing() {
   );
 }
 
+function About() {
+  return (
+    <section id="chi-sono" className="py-24 bg-[#08081a]">
+      <div className="max-w-5xl mx-auto px-6 flex flex-col md:flex-row items-center gap-12">
+        <div className="shrink-0">
+          <img
+            src="/projects/logo.png"
+            alt="Walter Zannoni"
+            className="w-48 h-48 md:w-64 md:h-64 drop-shadow-[0_0_40px_rgba(139,92,246,0.5)]"
+          />
+        </div>
+        <div>
+          <p className="text-violet-400 text-sm font-semibold tracking-widest uppercase">Chi sono</p>
+          <h2 className="text-3xl md:text-4xl font-bold text-white mt-3">
+            Ciao, sono Walter 👋
+          </h2>
+          <p className="text-white/60 mt-5 text-lg leading-relaxed">
+            Ingegnere informatico con la passione per il web e l'intelligenza artificiale.
+            Da anni trasformo idee in prodotti digitali: siti che si fanno notare,
+            web app che risolvono problemi veri e soluzioni AI che fanno risparmiare tempo.
+          </p>
+          <p className="text-white/60 mt-4 text-lg leading-relaxed">
+            Lavoro da freelance, quindi parli sempre direttamente con me — niente agenzie,
+            niente intermediari, niente sorprese. E il pinguino qui accanto? È il mio socio. 🐧
+          </p>
+          <div className="flex gap-8 mt-8">
+            <div>
+              <p className="text-3xl font-extrabold text-transparent bg-gradient-to-r from-violet-300 to-cyan-300 bg-clip-text">20+</p>
+              <p className="text-sm text-white/50 mt-1">Progetti consegnati</p>
+            </div>
+            <div>
+              <p className="text-3xl font-extrabold text-transparent bg-gradient-to-r from-violet-300 to-cyan-300 bg-clip-text">100%</p>
+              <p className="text-sm text-white/50 mt-1">Clienti soddisfatti</p>
+            </div>
+            <div>
+              <p className="text-3xl font-extrabold text-transparent bg-gradient-to-r from-violet-300 to-cyan-300 bg-clip-text">24h</p>
+              <p className="text-sm text-white/50 mt-1">Tempo di risposta</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+const testimonials = [
+  {
+    name: "Marco R.",
+    role: "Titolare, Ristorante Da Marco",
+    text: "Walter mi ha fatto il sito con le prenotazioni online in una settimana. I clienti ora prenotano da soli e io ho smesso di perdere telefonate.",
+  },
+  {
+    name: "Giulia T.",
+    role: "Fotografa freelance",
+    text: "Il mio portfolio è esattamente come lo volevo: elegante e velocissimo. Mi ha già portato due clienti nuovi dal sito. Super consigliato.",
+  },
+  {
+    name: "Alessandro B.",
+    role: "Founder, startup e-commerce",
+    text: "Avevo preventivi da agenzie da 5.000€. Walter ha fatto lo stesso lavoro, meglio, a meno della metà. Comunicazione diretta e zero giri di parole.",
+  },
+];
+
+function Testimonials() {
+  return (
+    <section className="py-24 bg-[#050510]">
+      <div className="max-w-7xl mx-auto px-6">
+        <p className="text-violet-400 text-sm font-semibold tracking-widest uppercase text-center">Dicono di me</p>
+        <h2 className="text-3xl md:text-5xl font-bold text-white text-center mt-3">
+          Clienti che tornano, non solo clienti
+        </h2>
+        <div className="grid md:grid-cols-3 gap-8 mt-14">
+          {testimonials.map((t) => (
+            <figure
+              key={t.name}
+              className="rounded-2xl border border-white/10 bg-white/[0.03] p-7 hover:border-violet-400/40 transition-colors"
+            >
+              <div className="text-violet-300 text-4xl leading-none">"</div>
+              <blockquote className="text-white/70 leading-relaxed mt-2">{t.text}</blockquote>
+              <figcaption className="mt-5">
+                <p className="text-white font-semibold">{t.name}</p>
+                <p className="text-sm text-white/45">{t.role}</p>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function Contact() {
   const { isAuthenticated, user } = useAuth();
+  const [form, setForm] = useState({ name: "", email: "", plan: "", message: "" });
+  const [busy, setBusy] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setBusy(true);
+    setError(null);
+    const { data: sessionData } = await supabase.auth.getSession();
+    const { error: err } = await supabase.from("quote_requests").insert({
+      user_id: sessionData.session?.user.id ?? null,
+      name: form.name,
+      email: form.email,
+      plan: form.plan || null,
+      message: form.message,
+    });
+    setBusy(false);
+    if (err) {
+      setError("Qualcosa è andato storto. Riprova o scrivimi direttamente via email.");
+    } else {
+      setSent(true);
+    }
+  }
+
   return (
     <section id="contatti" className="py-24 bg-[#050510] relative overflow-hidden">
       <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-violet-600/20 rounded-full blur-[120px] pointer-events-none" />
-      <div className="relative max-w-3xl mx-auto px-6 text-center">
-        <h2 className="text-3xl md:text-5xl font-bold text-white">
+      <div className="relative max-w-3xl mx-auto px-6">
+        <h2 className="text-3xl md:text-5xl font-bold text-white text-center">
           Hai un'idea? <span className="bg-gradient-to-r from-violet-400 to-cyan-300 bg-clip-text text-transparent">Realizziamola.</span>
         </h2>
-        <p className="text-white/55 mt-5 text-lg">
+        <p className="text-white/55 mt-5 text-lg text-center">
           {isAuthenticated
-            ? `Perfetto ${user?.name ?? ""}, sei già registrato: scrivimi e parliamo del tuo progetto.`
-            : "Registrati gratuitamente per entrare nell'area clienti, oppure scrivimi direttamente."}
+            ? `Ciao ${user?.name ?? ""}! Compila il modulo: ti rispondo entro 24 ore con un preventivo gratuito.`
+            : "Compila il modulo: ti rispondo entro 24 ore con un preventivo gratuito e senza impegno."}
         </p>
+
+        {sent ? (
+          <div className="mt-10 rounded-3xl border border-emerald-500/40 bg-emerald-500/10 p-8 text-center">
+            <CheckCircle2 className="w-12 h-12 text-emerald-400 mx-auto" />
+            <h3 className="text-xl font-bold text-white mt-4">Richiesta inviata! 🎉</h3>
+            <p className="text-white/60 mt-2">
+              Grazie {form.name}! Ti rispondo entro 24 ore all'indirizzo {form.email}.
+            </p>
+          </div>
+        ) : (
+          <form
+            onSubmit={handleSubmit}
+            className="mt-10 rounded-3xl border border-white/10 bg-black/40 backdrop-blur-xl p-8 space-y-4"
+          >
+            <div className="grid sm:grid-cols-2 gap-4">
+              <Input
+                placeholder="Il tuo nome"
+                required
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                className="bg-white/5 border-white/15 text-white placeholder:text-white/40"
+              />
+              <Input
+                type="email"
+                placeholder="La tua email"
+                required
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                className="bg-white/5 border-white/15 text-white placeholder:text-white/40"
+              />
+            </div>
+            <select
+              value={form.plan}
+              onChange={(e) => setForm({ ...form, plan: e.target.value })}
+              className="w-full rounded-md border border-white/15 bg-white/5 text-white px-3 py-2 text-sm [&>option]:bg-[#0a0a1a]"
+            >
+              <option value="">Che tipo di progetto hai in mente? (facoltativo)</option>
+              <option value="Sito Vetrina">Sito Vetrina</option>
+              <option value="Web App / E-commerce">Web App / E-commerce</option>
+              <option value="Soluzione AI">Soluzione AI</option>
+              <option value="App Mobile">App Mobile</option>
+              <option value="Altro">Altro / non lo so ancora</option>
+            </select>
+            <Textarea
+              placeholder="Raccontami la tua idea in poche righe..."
+              required
+              rows={5}
+              value={form.message}
+              onChange={(e) => setForm({ ...form, message: e.target.value })}
+              className="bg-white/5 border-white/15 text-white placeholder:text-white/40"
+            />
+            {error && (
+              <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/30 rounded-lg px-3 py-2">
+                {error}
+              </p>
+            )}
+            <Button
+              type="submit"
+              size="lg"
+              disabled={busy}
+              className="w-full bg-gradient-to-r from-violet-600 to-cyan-500 hover:from-violet-500 hover:to-cyan-400 text-white border-0"
+            >
+              {busy ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Send className="w-4 h-4 mr-2" />}
+              Invia la richiesta
+            </Button>
+          </form>
+        )}
+
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-          {!isAuthenticated && (
-            <Link to="/login">
-              <Button size="lg" className="bg-gradient-to-r from-violet-600 to-cyan-500 hover:from-violet-500 hover:to-cyan-400 text-white border-0 px-8">
-                Accedi / Registrati gratis
-              </Button>
-            </Link>
-          )}
-          <a href="mailto:walter.zannoni@example.com">
+          <a href="mailto:walterzannoni90@outlook.it">
             <Button size="lg" variant="outline" className="border-white/25 text-white hover:bg-white/10 bg-transparent px-8">
-              <Mail className="w-4 h-4 mr-2" /> Scrivimi una mail
+              <Mail className="w-4 h-4 mr-2" /> walterzannoni90@outlook.it
             </Button>
           </a>
         </div>
         <div className="flex items-center justify-center gap-5 mt-10 text-white/50">
-          <a href="#" aria-label="GitHub" className="hover:text-white transition-colors"><Github className="w-5 h-5" /></a>
-          <a href="#" aria-label="LinkedIn" className="hover:text-white transition-colors"><Linkedin className="w-5 h-5" /></a>
+          <a href="https://github.com/walterzannoni90-netizen" target="_blank" rel="noreferrer" aria-label="GitHub" className="hover:text-white transition-colors"><Github className="w-5 h-5" /></a>
+          <a href="https://www.instagram.com/walterzannoni" target="_blank" rel="noreferrer" aria-label="Instagram" className="hover:text-white transition-colors"><Instagram className="w-5 h-5" /></a>
         </div>
       </div>
     </section>
@@ -487,7 +714,9 @@ export default function Home() {
       <Navbar />
       <Hero />
       <Services />
+      <About />
       <Projects />
+      <Testimonials />
       <Pricing />
       <Contact />
       <Footer />
