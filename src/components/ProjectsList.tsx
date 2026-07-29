@@ -1,5 +1,4 @@
 import { Link } from "react-router";
-import { ExternalLink } from "lucide-react";
 import { SEO } from "@/components/SEO";
 import { getAllProjects } from "@/data/projects";
 
@@ -73,14 +72,6 @@ export function ProjectsList() {
                   </div>
                 </div>
               </Link>
-              <div className="px-6 pb-6 pt-0">
-                <Link
-                  to={`/progetti/${p.slug}`}
-                  className="inline-flex items-center gap-2 w-full px-4 py-3 border border-neutral-700 rounded-lg text-neutral-300 hover:border-violet-500 hover:text-violet-400 hover:bg-neutral-900/50 transition-all text-center"
-                >
-                  Vedi dettagli <ExternalLink className="w-4 h-4" />
-                </Link>
-              </div>
             </article>
           ))}
         </div>
