@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router";
 import { useEffect, useState } from "react";
 import { ArrowLeft, FileText, Loader2, LogOut, UserRound } from "lucide-react";
+import { SEO } from "@/components/SEO";
 
 type QuoteRequest = {
   id: number;
@@ -51,6 +52,8 @@ export default function AreaRiservata() {
   }
 
   return (
+    <>
+      <SEO title="Area Riservata" description="La tua area clienti: monitora lo stato delle tue richieste di preventivo." path="/area-riservata" />
     <div className="min-h-screen bg-[#050510] text-white">
       <div className="max-w-4xl mx-auto px-6 py-12">
         <div className="flex items-center justify-between flex-wrap gap-4">
@@ -121,5 +124,6 @@ export default function AreaRiservata() {
         )}
       </div>
     </div>
+    </>
   );
 }

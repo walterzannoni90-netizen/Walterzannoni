@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/lib/supabase";
+import { SEO } from "@/components/SEO";
+import { ProjectsList } from "@/components/ProjectsList";
 import {
   Database,
   BrainCircuit,
@@ -25,63 +27,6 @@ import {
   UserRound,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-
-const projects = [
-  {
-    img: "/projects/dashboard.png",
-    title: "Nova Analytics",
-    tag: "Web App · SaaS",
-    desc: "Dashboard analytics in dark mode con grafici in tempo reale, KPI e reportistica avanzata.",
-  },
-  {
-    img: "/projects/ecommerce.png",
-    title: "Atelier Milano",
-    tag: "E-commerce",
-    desc: "Store di lusso con catalogo editoriale, checkout ottimizzato e design minimal di alto livello.",
-  },
-  {
-    img: "/projects/aichat.png",
-    title: "Synapse AI",
-    tag: "Intelligenza Artificiale",
-    desc: "Assistente conversazionale con interfaccia neon, memoria contestuale e risposte in streaming.",
-  },
-  {
-    img: "/projects/mobileapp.png",
-    title: "PulseFit",
-    tag: "Mobile App",
-    desc: "App fitness con tracking degli allenamenti, statistiche e piani personalizzati.",
-  },
-  {
-    img: "/projects/realestate.png",
-    title: "Immobilia",
-    tag: "Piattaforma Web",
-    desc: "Portale immobiliare con ricerca su mappa, schede proprietà e filtri intelligenti.",
-  },
-  {
-    img: "/projects/ristorante.png",
-    title: "Osteria Novecento",
-    tag: "Sito Ristorante",
-    desc: "Sito elegante per ristorante con menù digitale, prenotazione tavoli e galleria dei piatti.",
-  },
-  {
-    img: "/projects/hotel.png",
-    title: "Marechiaro Resort",
-    tag: "Booking Engine",
-    desc: "Piattaforma di prenotazione per resort con ricerca per date, camere con prezzi e checkout.",
-  },
-  {
-    img: "/projects/fintech.png",
-    title: "Konto",
-    tag: "Fintech · Web App",
-    desc: "Dashboard bancaria stile neobank con saldo, movimenti, grafici delle spese e carte virtuali.",
-  },
-  {
-    img: "/projects/fotografo.png",
-    title: "Luca Ferri — Fotografia",
-    tag: "Portfolio",
-    desc: "Portfolio artistico per fotografo con galleria a tutto schermo e tipografia minimale.",
-  },
-];
 
 const services = [
   {
@@ -120,6 +65,7 @@ function Navbar() {
   const links = [
     { href: "#home", label: "Home" },
     { href: "#servizi", label: "Servizi" },
+    { href: "#chi-sono", label: "Chi sono" },
     { href: "#progetti", label: "Progetti" },
     { href: "#prezzi", label: "Prezzi" },
     { href: "#contatti", label: "Contatti" },
@@ -191,13 +137,15 @@ function Navbar() {
           className="md:hidden text-white"
           onClick={() => setOpen(!open)}
           aria-label="Menu"
+          aria-expanded={open}
+          aria-controls="mobile-menu"
         >
           {open ? <X /> : <Menu />}
         </button>
       </nav>
 
       {open && (
-        <div className="md:hidden bg-black/90 backdrop-blur-xl border-t border-white/10 px-6 py-4 flex flex-col gap-4">
+        <div id="mobile-menu" className="md:hidden bg-black/90 backdrop-blur-xl border-t border-white/10 px-6 py-4 flex flex-col gap-4">
           {links.map((l) => (
             <a
               key={l.href}
@@ -297,46 +245,6 @@ function Services() {
   );
 }
 
-function Projects() {
-  return (
-    <section id="progetti" className="py-24 bg-[#08081a]">
-      <div className="max-w-7xl mx-auto px-6">
-        <p className="text-cyan-300 text-sm font-semibold tracking-widest uppercase text-center">Portfolio</p>
-        <h2 className="text-3xl md:text-5xl font-bold text-white text-center mt-3">
-          Progetti che parlano da soli
-        </h2>
-        <p className="text-white/50 text-center mt-4 max-w-xl mx-auto">
-          Una selezione di lavori recenti: web app, e-commerce, piattaforme AI e mobile.
-        </p>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-14">
-          {projects.map((p) => (
-            <article
-              key={p.title}
-              className="group rounded-2xl overflow-hidden border border-white/10 bg-white/[0.03] hover:border-cyan-300/40 transition-all duration-300 hover:-translate-y-1"
-            >
-              <div className="relative overflow-hidden aspect-[3/2]">
-                <img
-                  src={p.img}
-                  alt={p.title}
-                  loading="lazy"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <span className="absolute top-3 left-3 text-xs font-medium px-3 py-1 rounded-full bg-black/60 backdrop-blur text-cyan-200 border border-white/10">
-                  {p.tag}
-                </span>
-              </div>
-              <div className="p-5">
-                <h3 className="text-lg font-semibold text-white">{p.title}</h3>
-                <p className="text-sm text-white/55 mt-1.5 leading-relaxed">{p.desc}</p>
-              </div>
-            </article>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 const plans = [
   {
     name: "Sito Vetrina",
@@ -355,7 +263,7 @@ const plans = [
   },
   {
     name: "Web App / E-commerce",
-    price: "€1.499",
+    price: "EUR 1.499",
     unit: "una tantum",
     desc: "La scelta giusta per vendere e gestire tutto online.",
     features: [
@@ -371,7 +279,7 @@ const plans = [
   },
   {
     name: "Soluzione AI",
-    price: "€2.999",
+    price: "EUR 2.999",
     unit: "una tantum",
     desc: "Per chi vuole il futuro, oggi.",
     features: [
@@ -389,28 +297,36 @@ const plans = [
 
 function Pricing() {
   const [dbPlans, setDbPlans] = useState<typeof plans | null>(null);
+  const [pricingLoading, setPricingLoading] = useState(true);
+  const [pricingError, setPricingError] = useState<string | null>(null);
 
   useEffect(() => {
-    supabase
-      .from("pricing_plans")
-      .select("name, description, price_from, unit, features, highlight")
-      .eq("published", true)
-      .order("sort_order")
-      .then(({ data, error }) => {
-        if (!error && data && data.length > 0) {
-          setDbPlans(
-            data.map((p) => ({
-              name: p.name as string,
-              price: `€${Number(p.price_from).toLocaleString("it-IT")}`,
-              unit: (p.unit as string) ?? "una tantum",
-              desc: (p.description as string) ?? "",
-              features: (p.features as string[]) ?? [],
-              highlight: p.highlight as boolean,
-              cta: "Richiedi preventivo",
-            }))
-          );
-        }
-      });
+    (async () => {
+      const { data, error } = await supabase
+        .from("pricing_plans")
+        .select("name, description, price_from, unit, features, highlight")
+        .eq("published", true)
+        .order("sort_order");
+      if (error) {
+        setPricingError("Impossibile caricare i prezzi. Riprova più tardi.");
+      } else if (data && data.length > 0) {
+        setDbPlans(
+          data.map((p) => ({
+            name: p.name as string,
+            price: `EUR ${Number(p.price_from).toLocaleString("it-IT")}`,
+            unit: (p.unit as string) ?? "una tantum",
+            desc: (p.description as string) ?? "",
+            features: (p.features as string[]) ?? [],
+            highlight: p.highlight as boolean,
+            cta: "Richiedi preventivo",
+          }))
+        );
+      }
+      setPricingLoading(false);
+    })().catch(() => {
+      setPricingError("Errore di connessione. Riprova più tardi.");
+      setPricingLoading(false);
+    });
   }, []);
 
   const allPlans = dbPlans ?? plans;
@@ -428,6 +344,17 @@ function Pricing() {
         <p className="text-white/50 text-center mt-4 max-w-xl mx-auto">
           Ogni progetto è unico: questi sono i prezzi di partenza. Contattami per un preventivo su misura, sempre gratuito.
         </p>
+        {pricingLoading ? (
+          <div className="flex justify-center py-20">
+            <Loader2 className="w-8 h-8 text-violet-400 animate-spin" />
+          </div>
+        ) : pricingError ? (
+          <div className="text-center py-20">
+            <p className="text-red-400 bg-red-500/10 border border-red-500/30 rounded-lg px-4 py-3 inline-block">
+              {pricingError}
+            </p>
+          </div>
+        ) : (
         <div className="grid md:grid-cols-3 gap-8 mt-14 items-stretch">
           {allPlans.map((pl) => (
             <div
@@ -475,6 +402,7 @@ function Pricing() {
             </div>
           ))}
         </div>
+        )}
       </div>
     </section>
   );
@@ -487,7 +415,7 @@ function About() {
         <div className="shrink-0">
           <img
             src="/projects/logo.png"
-            alt="Walter Zannoni"
+            alt="Logo Walter Zannoni"
             className="w-48 h-48 md:w-64 md:h-64 drop-shadow-[0_0_40px_rgba(139,92,246,0.5)]"
           />
         </div>
@@ -539,7 +467,7 @@ const testimonials = [
   {
     name: "Alessandro B.",
     role: "Founder, startup e-commerce",
-    text: "Avevo preventivi da agenzie da 5.000€. Walter ha fatto lo stesso lavoro, meglio, a meno della metà. Comunicazione diretta e zero giri di parole.",
+    text: "Avevo preventivi da agenzie da 5.000EUR . Walter ha fatto lo stesso lavoro, meglio, a meno della metà. Comunicazione diretta e zero giri di parole.",
   },
 ];
 
@@ -710,12 +638,17 @@ function Footer() {
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[#050510] text-white scroll-smooth" style={{ scrollBehavior: "smooth" }}>
+    <div className="min-h-screen bg-[#050510] text-white scroll-smooth">
+      <SEO
+        title="Home"
+        description="Sviluppatore web e specialista AI. Trasformo idee in prodotti digitali: siti, web app, database e soluzioni AI."
+        path="/"
+      />
       <Navbar />
       <Hero />
       <Services />
       <About />
-      <Projects />
+      <ProjectsList />
       <Testimonials />
       <Pricing />
       <Contact />

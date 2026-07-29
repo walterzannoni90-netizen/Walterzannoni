@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router";
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { SEO } from "@/components/SEO";
 
 export default function Login() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -64,6 +65,8 @@ export default function Login() {
   }
 
   return (
+    <>
+      <SEO title={mode === "login" ? "Accedi" : "Registrati"} description="Accedi alla tua area riservata o crea un account gratuito per gestire le tue richieste di preventivo." path="/login" />
     <div className="min-h-screen bg-[#050510] relative flex items-center justify-center px-6 overflow-hidden">
       <img
         src="/projects/hero.png"
@@ -186,5 +189,6 @@ export default function Login() {
         </p>
       </div>
     </div>
+    </>
   );
 }

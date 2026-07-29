@@ -1,9 +1,33 @@
 <!doctype html>
-<html lang="en">
+<html lang="it">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Walter Zannoni — Web & AI Developer</title>
+    <meta name="description" content="Sviluppatore web e specialista AI. Trasformo idee in prodotti digitali: siti, web app, database e soluzioni basate sull'intelligenza artificiale." />
+    <meta name="theme-color" content="#050510" />
+    <meta property="og:title" content="Walter Zannoni — Web & AI Developer" />
+    <meta property="og:description" content="Sviluppatore web e specialista AI. Trasformo idee in prodotti digitali: siti, web app, database e soluzioni basate sull'intelligenza artificiale." />
+    <meta property="og:image" content="https://walterzannoni.dev/projects/logo.png" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/png" href="/projects/logo.png" />
+    <script>
+      (function() {
+        var params = new URLSearchParams(window.location.search);
+        var spaPath = params.get('spaPath');
+        if (spaPath) {
+          try {
+            var decoded = decodeURIComponent(spaPath);
+            // Clean URL and redirect
+            window.history.replaceState({}, document.title, window.location.pathname);
+            window.location.href = decoded;
+          } catch (e) {
+            console.warn('spaPath decode failed', e);
+          }
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
