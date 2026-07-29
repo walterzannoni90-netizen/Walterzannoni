@@ -15,6 +15,13 @@ function RedirectHandler() {
     if (redirect) {
       window.history.replaceState({}, document.title, window.location.pathname);
       navigate(decodeURIComponent(redirect));
+      return;
+    }
+    const stored = sessionStorage.getItem('redirect');
+    if (stored) {
+      sessionStorage.removeItem('redirect');
+      const path = stored.replace(window.location.origin, '');
+      navigate(path, { replace: true });
     }
   }, [navigate]);
   return null;
